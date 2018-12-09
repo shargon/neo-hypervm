@@ -32,8 +32,7 @@ namespace NeoSharp.VM.Interop.Types.Collections
 
         #region Not implemented
 
-        public override int Drop(int count = 0) => throw new NotImplementedException();
-        public override ExecutionContextBase Pop() => throw new NotImplementedException();
+        public override bool TryPop(out ExecutionContextBase item) => throw new NotImplementedException();
         public override void Push(ExecutionContextBase item) => throw new NotImplementedException();
 
         #endregion

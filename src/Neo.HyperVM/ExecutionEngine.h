@@ -115,6 +115,11 @@ public:
 		return this->_consumedGas;
 	}
 
+	inline void SetGasAmount(uint64 gas)
+	{
+		this->_maxGas = gas;
+	}
+
 	// Setters
 
 	inline void SetLogCallback(OnStepIntoCallback &logCallback)
@@ -130,7 +135,7 @@ public:
 	void StepOut();
 	void StepOver();
 
-	EVMState Execute(uint32 gas);
+	EVMState Execute();
 
 	// Creators
 

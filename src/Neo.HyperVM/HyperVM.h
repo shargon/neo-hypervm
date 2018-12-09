@@ -38,7 +38,8 @@ extern "C"
 	DllExport void __stdcall ExecutionEngine_Clean(ExecutionEngine* engine, uint32 iteration);
 	DllExport int32 __stdcall ExecutionEngine_LoadScript(ExecutionEngine* engine, byte* script, int32 scriptLength, int32 rvcount);
 	DllExport byte __stdcall ExecutionEngine_LoadCachedScript(ExecutionEngine* engine, int32 scriptIndex, int32 rvcount);
-	DllExport byte __stdcall ExecutionEngine_Execute(ExecutionEngine* engine, uint32 gas);
+	DllExport byte __stdcall ExecutionEngine_Execute(ExecutionEngine* engine);
+	DllExport void __stdcall ExecutionEngine_SetGasAmount(ExecutionEngine* engine, uint64 gas);
 	DllExport byte __stdcall ExecutionEngine_IncreaseGas(ExecutionEngine* engine, uint64 gas);
 	DllExport void __stdcall ExecutionEngine_StepInto(ExecutionEngine* engine);
 	DllExport void __stdcall ExecutionEngine_StepOver(ExecutionEngine* engine);
@@ -53,7 +54,6 @@ extern "C"
 	DllExport IStackItem* __stdcall StackItems_Pop(StackItems* stack);
 	DllExport IStackItem* __stdcall StackItems_Peek(StackItems* stack, int32 index);
 	DllExport void __stdcall StackItems_Push(StackItems* stack, IStackItem* item);
-	DllExport int32 __stdcall StackItems_Drop(StackItems* stack, int32 count);
 
 	// ExecutionContextStack
 

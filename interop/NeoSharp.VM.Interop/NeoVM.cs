@@ -75,7 +75,6 @@ namespace NeoSharp.VM.Interop
 
         internal delegate void delVoid_OutIntOutIntOutIntOutInt(out int i1, out int i2, out int i3, out int i4);
 
-        internal delegate int delInt_HandleInt(IntPtr pointer, int value);
         internal delegate void delVoid_HandleUInt(IntPtr pointer, uint value);
         internal delegate byte delByte_HandleInt64(IntPtr pointer, long value);
         internal delegate void delVoid_HandleInt(IntPtr pointer, int value);
@@ -83,6 +82,7 @@ namespace NeoSharp.VM.Interop
         internal delegate byte delByte_HandleRefInt(IntPtr item, out int size);
         internal delegate IntPtr delHandle_HandleInt(IntPtr pointer, int value);
         internal delegate byte delByte_HandleUInt64(IntPtr pointer, ulong value);
+        internal delegate void delVoid_HandleUInt64(IntPtr pointer, ulong value);
         internal delegate void delVoid_HandleHandle(IntPtr pointer1, IntPtr pointer2);
         internal delegate byte delByte_HandleHandle(IntPtr pointer1, IntPtr pointer2);
         internal delegate IntPtr delHandle_HandleHandle(IntPtr pointer1, IntPtr pointer2);
@@ -120,7 +120,7 @@ namespace NeoSharp.VM.Interop
         internal static delVoid_RefHandle ExecutionEngine_Free;
         internal static delInt_HandleHandleIntInt ExecutionEngine_LoadScript;
         internal static delByte_HandleIntInt ExecutionEngine_LoadCachedScript;
-        internal static delByte_HandleUInt64 ExecutionEngine_Execute;
+        internal static delByte_Handle ExecutionEngine_Execute;
         internal static delVoid_Handle ExecutionEngine_StepInto;
         internal static delVoid_Handle ExecutionEngine_StepOver;
         internal static delVoid_Handle ExecutionEngine_StepOut;
@@ -128,13 +128,13 @@ namespace NeoSharp.VM.Interop
         internal static delUInt64_Handle ExecutionEngine_GetConsumedGas;
         internal static delVoid_HandleUInt ExecutionEngine_Clean;
         internal static delByte_HandleUInt64 ExecutionEngine_IncreaseGas;
+        internal static delVoid_HandleUInt64 ExecutionEngine_SetGasAmount;
         internal static delVoid_HandleOnStepIntoCallback ExecutionEngine_AddLog;
 
         internal static delInt_Handle StackItems_Count;
         internal static delVoid_HandleHandle StackItems_Push;
         internal static delHandle_Handle StackItems_Pop;
         internal static delHandle_HandleInt StackItems_Peek;
-        internal static delInt_HandleInt StackItems_Drop;
 
         internal static delInt_Handle ExecutionContextStack_Count;
         internal static delHandle_HandleInt ExecutionContextStack_Peek;

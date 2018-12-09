@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using NeoSharp.VM.Interop.Extensions;
 using NeoSharp.VM.Interop.Native;
+using NeoSharp.VM.Interop.Types.StackItems;
 
 namespace NeoSharp.VM.Interop.Types.Collections
 {
@@ -30,34 +33,6 @@ namespace NeoSharp.VM.Interop.Types.Collections
 
                 return NeoVM.StackItems_Count(_handle);
             }
-        }
-
-        /// <summary>
-        /// Drop object from the stack
-        /// </summary>
-        /// <param name="count">Number of items to drop</param>
-        /// <returns>Return the first element of the stack</returns>
-        public override int Drop(int count = 0)
-        {
-            if (_engine.IsDisposed) throw new ObjectDisposedException(nameof(ExecutionEngine));
-
-            return NeoVM.StackItems_Drop(_handle, count);
-        }
-
-        /// <summary>
-        /// Pop object from the stack
-        /// </summary>
-        /// <param name="free">True for free object</param>
-        /// <returns>Return the first element of the stack</returns>
-        public override StackItemBase Pop()
-        {
-            if (_engine.IsDisposed) throw new ObjectDisposedException(nameof(ExecutionEngine));
-
-            var ptr = NeoVM.StackItems_Pop(_handle);
-
-            if (ptr == IntPtr.Zero) throw new IndexOutOfRangeException();
-
-            return _engine.ConvertFromNative(ptr);
         }
 
         /// <summary>
@@ -100,7 +75,7 @@ namespace NeoSharp.VM.Interop.Types.Collections
         /// <typeparam name="TStackItem">Object type</typeparam>
         /// <param name="item">Item</param>
         /// <returns>Return false if it is something wrong</returns>
-        public override bool TryPop<TStackItem>(out TStackItem item)
+        public override bool TryPop(out StackItemBase item)
         {
             if (_engine.IsDisposed) throw new ObjectDisposedException(nameof(ExecutionEngine));
 
@@ -108,22 +83,12 @@ namespace NeoSharp.VM.Interop.Types.Collections
 
             if (ptr == IntPtr.Zero)
             {
-                item = default(TStackItem);
+                item = null;
                 return false;
             }
 
-            var ret = _engine.ConvertFromNative(ptr);
-
-            if (ret is TStackItem ts)
-            {
-                item = (TStackItem)ret;
-                return true;
-            }
-
-            ret?.Dispose();
-            item = default(TStackItem);
-
-            return false;
+            item = _engine.ConvertFromNative(ptr);
+            return item != null;
         }
 
         /// <summary>
@@ -139,6 +104,92 @@ namespace NeoSharp.VM.Interop.Types.Collections
             if (handle == IntPtr.Zero) throw new ExternalException();
             if (_engine.IsDisposed) throw new ObjectDisposedException(nameof(ExecutionEngine));
         }
+
+        #region Create items
+
+        /// <summary>
+        /// Create Map StackItem
+        /// </summary>
+        protected override MapStackItemBase CreateMap()
+        {
+            return new MapStackItem(_engine);
+        }
+
+        /// <summary>
+        /// Create Array StackItem
+        /// </summary>
+        /// <param name="items">Items</param>
+        protected override ArrayStackItemBase CreateArray(IEnumerable<StackItemBase> items = null)
+        {
+            return new ArrayStackItem(_engine, items, false);
+        }
+
+        /// <summary>
+        /// Create Struct StackItem
+        /// </summary>
+        /// <param name="items">Items</param>
+        protected override ArrayStackItemBase CreateStruct(IEnumerable<StackItemBase> items = null)
+        {
+            return new ArrayStackItem(_engine, items, true);
+        }
+
+        /// <summary>
+        /// Create ByteArrayStackItem
+        /// </summary>
+        /// <param name="data">Buffer</param>
+        protected override ByteArrayStackItemBase CreateByteArray(byte[] data)
+        {
+            return new ByteArrayStackItem(_engine, data);
+        }
+
+        /// <summary>
+        /// Create InteropStackItem
+        /// </summary>
+        /// <param name="obj">Object</param>
+        protected override InteropStackItemBase<T> CreateInterop<T>(T obj)
+        {
+            var objKey = _engine.PrepareInterop(obj);
+
+            return new InteropStackItem<T>(_engine, obj, objKey);
+        }
+
+        /// <summary>
+        /// Create BooleanStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected override BooleanStackItemBase CreateBool(bool value)
+        {
+            return new BooleanStackItem(_engine, value);
+        }
+
+        /// <summary>
+        /// Create IntegerStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected override IntegerStackItemBase CreateInteger(int value)
+        {
+            return new IntegerStackItem(_engine, value);
+        }
+
+        /// <summary>
+        /// Create IntegerStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected override IntegerStackItemBase CreateInteger(long value)
+        {
+            return new IntegerStackItem(_engine, value);
+        }
+
+        /// <summary>
+        /// Create IntegerStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected override IntegerStackItemBase CreateInteger(BigInteger value)
+        {
+            return new IntegerStackItem(_engine, value);
+        }
+
+        #endregion
 
         /// <summary>
         /// String representation

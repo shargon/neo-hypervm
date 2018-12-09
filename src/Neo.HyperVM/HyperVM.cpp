@@ -108,11 +108,18 @@ byte ExecutionEngine_IncreaseGas(ExecutionEngine* engine, uint64 gas)
 	return engine->AddGasCost(gas) ? 0x01 : 0x00;
 }
 
-byte ExecutionEngine_Execute(ExecutionEngine* engine, uint32 gas)
+void ExecutionEngine_SetGasAmount(ExecutionEngine* engine, uint64 gas)
+{
+	if (engine == nullptr) return;
+
+	engine->SetGasAmount(gas);
+}
+
+byte ExecutionEngine_Execute(ExecutionEngine* engine)
 {
 	if (engine == nullptr) return 0x00;
 
-	return (byte)engine->Execute(gas);
+	return (byte)engine->Execute();
 }
 
 void ExecutionEngine_StepInto(ExecutionEngine* engine)
@@ -151,17 +158,6 @@ uint64 ExecutionEngine_GetConsumedGas(ExecutionEngine* engine)
 }
 
 // StackItems
-
-int32 StackItems_Drop(StackItems* stack, int32 count)
-{
-	if (stack == nullptr) return 0;
-
-	int32 ret = stack->Count();
-	ret = ret > count ? count : ret;
-
-	for (int32 x = 0; x < ret; ++x) stack->Drop();
-	return ret;
-}
 
 IStackItem* StackItems_Pop(StackItems* stack)
 {

@@ -15,7 +15,7 @@ void ExecutionEngine::Clean(uint32 iteration)
 	this->_iteration = iteration;
 	this->_state = EVMState::NONE;
 	this->_consumedGas = 0;
-	this->_maxGas = 0xFFFFFFFF;
+	this->_maxGas = 0xFFFFFFFFFFFFFFFF;
 
 	this->InvocationStack.Clear();
 	this->ResultStack.Clear();
@@ -31,7 +31,7 @@ ExecutionEngine::ExecutionEngine
 ) :
 	_iteration(0),
 	_consumedGas(0),
-	_maxGas(0xFFFFFFFF),
+	_maxGas(0xFFFFFFFFFFFFFFFF),
 	_counter(new IStackItemCounter(MAX_STACK_SIZE)),
 	_state(EVMState::NONE),
 	Log(nullptr),
@@ -101,10 +101,8 @@ int32 ExecutionEngine::LoadScript(byte* script, int32 scriptLength, int32 rvcoun
 	return index;
 }
 
-EVMState ExecutionEngine::Execute(uint32 gas)
+EVMState ExecutionEngine::Execute()
 {
-	this->_maxGas = gas;
-
 	do
 	{
 		this->InternalStepInto();

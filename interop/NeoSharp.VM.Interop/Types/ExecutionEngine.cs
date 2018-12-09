@@ -14,8 +14,8 @@ namespace NeoSharp.VM.Interop.Types
         // This delegates are required for native calls, 
         // otherwise is disposed and produce a memory error
 
+        private ulong _gasAmount = ulong.MaxValue;
         private readonly NeoVM.OnStepIntoCallback _internalOnStepInto;
-
         private readonly NeoVM.InvokeInteropCallback _internalInvokeInterop;
         private readonly NeoVM.LoadScriptCallback _internalLoadScript;
         private readonly NeoVM.GetMessageCallback _internalGetMessage;
@@ -79,6 +79,19 @@ namespace NeoSharp.VM.Interop.Types
         /// Consumed Gas
         /// </summary>
         public override ulong ConsumedGas => NeoVM.ExecutionEngine_GetConsumedGas(_handle);
+
+        /// <summary>
+        /// Gas Amount
+        /// </summary>
+        public override ulong GasAmount
+        {
+            get => _gasAmount;
+            set
+            {
+                _gasAmount = value;
+                NeoVM.ExecutionEngine_SetGasAmount(_handle, value);
+            }
+        }
 
         #endregion
 
@@ -197,6 +210,32 @@ namespace NeoSharp.VM.Interop.Types
         }
 
         /// <summary>
+        /// Prepare interop object
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>Key index</returns>
+        internal int PrepareInterop<T>(T obj) where T : class
+        {
+            var objKey = _interopCacheIndex.IndexOf(obj);
+
+            if (objKey == -1)
+            {
+                objKey = _interopCache.Count;
+
+                _interopCache.Add(new InteropCacheEntry()
+                {
+                    Value = obj,
+                    Instanciator = (engine, ptr, key, value) =>
+                        new InteropStackItem<T>(engine, ptr, key, (T)value)
+                });
+
+                _interopCacheIndex.Add(obj);
+            }
+
+            return objKey;
+        }
+
+        /// <summary>
         /// Invoke Interop callback
         /// </summary>
         /// <param name="ptr">Method</param>
@@ -271,30 +310,27 @@ namespace NeoSharp.VM.Interop.Types
         /// <param name="iteration">Iteration</param>
         public override void Clean(uint iteration = 0)
         {
+            _gasAmount = ulong.MaxValue;
+
             NeoVM.ExecutionEngine_Clean(_handle, iteration);
         }
 
         /// <summary>
         /// Execute until
         /// </summary>
-        /// <param name="gas">Gas</param>
-        public override bool Execute(ulong gas = uint.MaxValue)
+        public override bool Execute()
         {
             // HALT=TRUE
 
-            return NeoVM.ExecutionEngine_Execute(_handle, gas) == NeoVM.TRUE;
+            return NeoVM.ExecutionEngine_Execute(_handle) == NeoVM.TRUE;
         }
 
         /// <summary>
         /// Step Into
         /// </summary>
-        /// <param name="steps">Steps</param>
-        public override void StepInto(int steps = 1)
+        public override void StepInto()
         {
-            for (var x = 0; x < steps; x++)
-            {
-                NeoVM.ExecutionEngine_StepInto(_handle);
-            }
+            NeoVM.ExecutionEngine_StepInto(_handle);
         }
 
         /// <summary>
@@ -311,115 +347,6 @@ namespace NeoSharp.VM.Interop.Types
         public override void StepOver()
         {
             NeoVM.ExecutionEngine_StepOver(_handle);
-        }
-
-        #endregion
-
-        #region Create items
-
-        /// <summary>
-        /// Create Map StackItem
-        /// </summary>
-        public override MapStackItemBase CreateMap()
-        {
-            return new MapStackItem(this);
-        }
-
-        /// <summary>
-        /// Create Array StackItem
-        /// </summary>
-        /// <param name="items">Items</param>
-        public override ArrayStackItemBase CreateArray(IEnumerable<StackItemBase> items = null)
-        {
-            return new ArrayStackItem(this, items, false);
-        }
-
-        /// <summary>
-        /// Create Struct StackItem
-        /// </summary>
-        /// <param name="items">Items</param>
-        public override ArrayStackItemBase CreateStruct(IEnumerable<StackItemBase> items = null)
-        {
-            return new ArrayStackItem(this, items, true);
-        }
-
-        /// <summary>
-        /// Create ByteArrayStackItem
-        /// </summary>
-        /// <param name="data">Buffer</param>
-        public override ByteArrayStackItemBase CreateByteArray(byte[] data)
-        {
-            return new ByteArrayStackItem(this, data);
-        }
-
-        /// <summary>
-        /// Create InteropStackItem
-        /// </summary>
-        /// <param name="obj">Object</param>
-        public override InteropStackItemBase<T> CreateInterop<T>(T obj)
-        {
-            var objKey = _interopCacheIndex.IndexOf(obj);
-
-            if (objKey == -1)
-            {
-                objKey = _interopCache.Count;
-
-                _interopCache.Add(new InteropCacheEntry()
-                {
-                    Value = obj,
-                    Instanciator = (engine, ptr, key, value) =>
-                        new InteropStackItem<T>(engine, ptr, key, (T)value)
-                });
-
-                _interopCacheIndex.Add(obj);
-            }
-
-            return new InteropStackItem<T>(this, obj, objKey);
-        }
-
-        /// <summary>
-        /// Create BooleanStackItem
-        /// </summary>
-        /// <param name="value">Value</param>
-        public override BooleanStackItemBase CreateBool(bool value)
-        {
-            return new BooleanStackItem(this, value);
-        }
-
-        /// <summary>
-        /// Create IntegerStackItem
-        /// </summary>
-        /// <param name="value">Value</param>
-        public override IntegerStackItemBase CreateInteger(int value)
-        {
-            return new IntegerStackItem(this, value);
-        }
-
-        /// <summary>
-        /// Create IntegerStackItem
-        /// </summary>
-        /// <param name="value">Value</param>
-        public override IntegerStackItemBase CreateInteger(long value)
-        {
-            return new IntegerStackItem(this, value);
-        }
-
-        /// <summary>
-        /// Create IntegerStackItem
-        /// </summary>
-        /// <param name="value">Value</param>
-        public override IntegerStackItemBase CreateInteger(BigInteger value)
-        {
-            return new IntegerStackItem(this, value);
-        }
-
-        /// <summary>
-        /// Create IntegerStackItem
-        /// </summary>
-        /// <param name="value">Value</param>
-        public override IntegerStackItemBase CreateInteger(byte[] value)
-        {
-            return new IntegerStackItem(this, value);
         }
 
         #endregion
