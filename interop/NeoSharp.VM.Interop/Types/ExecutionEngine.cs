@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using NeoSharp.VM.Interop.Types.Collections;
 using NeoSharp.VM.Interop.Types.StackItems;
