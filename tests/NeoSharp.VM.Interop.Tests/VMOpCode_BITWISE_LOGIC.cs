@@ -79,7 +79,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 var context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsTrue(it.Value);
                 }
@@ -88,7 +88,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsFalse(it.Value);
                 }
@@ -97,7 +97,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsFalse(it.Value);
                 }
@@ -144,7 +144,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 var context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsFalse(it.Value);
                 }
@@ -153,7 +153,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsFalse(it.Value);
                 }
@@ -162,7 +162,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsTrue(it.Value);
                 }
@@ -207,7 +207,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 var context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsTrue(it.Value);
                 }
@@ -216,7 +216,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsTrue(it.Value);
                 }
@@ -225,7 +225,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<BooleanStackItem>())
+                using (var it = context.EvaluationStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsTrue(it.Value);
                 }
@@ -269,17 +269,17 @@ namespace NeoSharp.VM.Interop.Tests
 
                 // Check
 
-                using (var it = engine.ResultStack.Pop<BooleanStackItem>())
+                using (var it = engine.ResultStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsFalse(it.Value);
                 }
 
-                using (var it = engine.ResultStack.Pop<BooleanStackItem>())
+                using (var it = engine.ResultStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsTrue(it.Value);
                 }
 
-                using (var it = engine.ResultStack.Pop<BooleanStackItem>())
+                using (var it = engine.ResultStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsTrue(it.Value);
                 }
@@ -308,7 +308,7 @@ namespace NeoSharp.VM.Interop.Tests
 
                 // Check
 
-                using (var it = engine.ResultStack.Pop<BooleanStackItem>())
+                using (var it = engine.ResultStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsTrue(it.Value);
                 }
@@ -337,7 +337,7 @@ namespace NeoSharp.VM.Interop.Tests
 
                 // Check
 
-                using (var it = engine.ResultStack.Pop<BooleanStackItem>())
+                using (var it = engine.ResultStack.PopObject<BooleanStackItem>())
                 {
                     Assert.IsFalse(it.Value);
                 }
@@ -367,7 +367,7 @@ namespace NeoSharp.VM.Interop.Tests
                 Assert.AreEqual(engine.InvocationStack.Count, 1);
 
                 var context = engine.CurrentContext;
-                using (var it = context.EvaluationStack.Pop<IntegerStackItem>())
+                using (var it = context.EvaluationStack.PopObject<IntegerStackItem>())
                 {
                     Assert.AreEqual(0x01, it.Value);
                 }

@@ -177,7 +177,7 @@ namespace NeoSharp.VM.Interop.Tests
 
                     Assert.IsTrue(engine.Execute());
 
-                    using (var i = engine.ResultStack.Pop<BooleanStackItem>())
+                    using (var i = engine.ResultStack.PopObject<BooleanStackItem>())
                     {
                         Assert.AreEqual(i.Value, false);
                     }
@@ -471,7 +471,7 @@ namespace NeoSharp.VM.Interop.Tests
         /// <param name="values">Values</param>
         protected void CheckArrayPeek(Stack stack, int index, bool isStruct, params object[] values)
         {
-            using (var arr = stack.Peek<ArrayStackItemBase>(index))
+            using (var arr = stack.PeekObject<ArrayStackItemBase>(index))
             {
                 Assert.IsTrue(arr != null);
                 Assert.AreEqual(isStruct, arr.IsStruct);
@@ -486,7 +486,7 @@ namespace NeoSharp.VM.Interop.Tests
         /// <param name="values">Values</param>
         protected void CheckArrayPop(Stack stack, bool isStruct, params object[] values)
         {
-            using (var arr = stack.Pop<ArrayStackItemBase>())
+            using (var arr = stack.PopObject<ArrayStackItemBase>())
             {
                 Assert.IsTrue(arr != null);
                 CheckArray(arr, isStruct, values);

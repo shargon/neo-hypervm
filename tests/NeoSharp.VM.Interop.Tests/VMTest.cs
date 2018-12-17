@@ -16,113 +16,6 @@ namespace NeoSharp.VM.Interop.Tests
     public class VMTest : VMOpCodeTest
     {
         [TestMethod]
-        public void TestScriptHash()
-        {
-            using (var script = new ScriptBuilder
-            (
-                EVMOpCode.PUSH0,
-                EVMOpCode.RET
-            ))
-            using (var engine = CreateEngine(null))
-            {
-                // Load script
-
-                engine.LoadScript(script);
-
-                // First check
-
-                Assert.AreEqual(1, engine.InvocationStack.Count);
-
-                // Check
-
-                byte[] realHash;
-                using (var sha = SHA256.Create())
-                using (var ripe = new RIPEMD160Managed())
-                {
-                    realHash = sha.ComputeHash(script);
-                    realHash = ripe.ComputeHash(realHash);
-                }
-
-                var context = engine.EntryContext;
-                {
-                    Assert.IsTrue(context.ScriptHash.SequenceEqual(realHash));
-                }
-            }
-        }
-
-        [TestMethod]
-        public void TestScriptLogic()
-        {
-            using (var script = new ScriptBuilder
-            (
-                EVMOpCode.PUSH0,
-                EVMOpCode.NOT,
-                EVMOpCode.NOT,
-                EVMOpCode.DROP
-            ))
-            using (var engine = CreateEngine(null))
-            {
-                engine.LoadScript(script);
-
-                var context = engine.CurrentContext;
-                {
-                    engine.StepInto();
-
-                    Assert.IsTrue(context.EvaluationStack.Count == 1);
-
-                    using (var it = context.EvaluationStack.Peek<ByteArrayStackItem>(0))
-                    {
-                        Assert.IsTrue(it.Value.Length == 0);
-                    }
-
-                    engine.StepInto();
-
-                    Assert.IsTrue(context.EvaluationStack.Count == 1);
-
-                    using (var it = context.EvaluationStack.Peek<BooleanStackItem>(0))
-                    {
-                        Assert.IsTrue(it.Value);
-                    }
-
-                    engine.StepInto();
-
-                    Assert.IsTrue(context.EvaluationStack.Count == 1);
-
-                    using (var it = context.EvaluationStack.Peek<BooleanStackItem>(0))
-                    {
-                        Assert.IsFalse(it.Value);
-                    }
-
-                    engine.Execute();
-                }
-
-                CheckClean(engine);
-            }
-        }
-
-        [TestMethod]
-        public void TestInit()
-        {
-            using (var engine = CreateEngine(Args))
-            {
-                Assert.AreEqual(EVMState.None, engine.State);
-
-                Assert.IsNull(engine.CurrentContext);
-                Assert.IsNull(engine.EntryContext);
-                Assert.IsNull(engine.CallingContext);
-
-                Assert.AreEqual(Args.InteropService, engine.InteropService);
-                Assert.AreEqual(Args.MessageProvider, engine.MessageProvider);
-                Assert.AreEqual(Args.ScriptTable, engine.ScriptTable);
-
-                Assert.AreEqual(0, engine.InvocationStack.Count);
-                Assert.AreEqual(0, engine.ResultStack.Count);
-
-                Assert.IsTrue(engine.Execute());
-            }
-        }
-
-        [TestMethod]
         public void TestParallel()
         {
             var args = new ExecutionEngineArgs()
@@ -179,7 +72,7 @@ namespace NeoSharp.VM.Interop.Tests
 
                         // Check result
 
-                        using (var it = engine.ResultStack.Pop<BooleanStackItem>())
+                        using (var it = engine.ResultStack.PopObject<BooleanStackItem>())
                         {
                             Assert.IsTrue(it.Value);
                         }
@@ -728,7 +621,7 @@ namespace NeoSharp.VM.Interop.Tests
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
-                using (var id = engine.ResultStack.Pop<InteropStackItem<DisposableDummy>>())
+                using (var id = engine.ResultStack.PopObject<InteropStackItem<DisposableDummy>>())
                 {
                     Assert.IsTrue(id != null && id.Value is DisposableDummy dd && !id.IsDisposed);
                 }
